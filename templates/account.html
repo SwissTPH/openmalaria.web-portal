@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% comment %}
+    Copyright (C) 2012-2013 Center for Research Computing, University of Notre Dame
+    Initially developed by Gregory Davis <gdavis2@nd.edu>, Benoit Raybaud <Benoit.Raybaud.1@nd.edu>, Alexander Vyushkov
+    <Alexander.Vyushkov@nd.edu>, and Cheng Liu <Cheng.Liu.125@nd.edu>.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    1. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+    Software.
+
+    2. Neither the name of the University of Notre Dame, nor the names of its contributors may be used to endorse or
+    promote products derived from this software without specific prior written permission.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+    OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+{% endcomment %}
+
+{% comment %} This template is used to handle account management for the system. {% endcomment %}
+{% comment %} Need to load the "notifications" template tag to show errors/warnings/notices {% endcomment %}
+{% load notifications %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/account.js"></script>
+]{% endblock %}
+
+{% block menu_display_css %}
+    display:block;
+{% endblock %}
+
+
+{% block contents %}
+    <div class="content">
+        {% show_notifications %}
+        <h2>Manage User Accounts</h2>
+        <p>Select an account from the list below to view/edit associated account information: <input type="hidden" value="{{ user.id }}" name="current_user_id" id="current_user_id" /> </p>
+        <table class="simple" style="width:100%;">
+            <tr>
+                <td style="width:25%;vertical-align: top;">
+                    <div style="background: #cccccc;padding:7px;"><label for="available_users" style="font-weight:bold;">Available Accounts:</label></div>
+                    <select size="24" style="width:100%; outline:none;" id="available_users" name="available_users">
+                        {% for a_user in available_users %}
+                            <option value="{{ a_user.id }}">{{ a_user.last_name }}, {{ a_user.first_name }} ({{ a_user.username }})</option>
+                        {% endfor %}
+                    </select>
+                    {% if  user.is_staff %}
+                    <div>
+                        <input type="button" value="Create New User" style="width:100%; margin-top:10px;" id="create_user" name="create_user">
+                        <input type="submit" disabled value="Delete Selected User" style="width:100%; margin-top:5px;" id="delete_user" name="delete_user" />
+                    </div>
+                    {% endif %}
+                </td>
+                <td style="width:75%;vertical-align: top;">
+                    <div id="waiting" style="display:none;">
+                        <img src="{{ STATIC_URL }}img/loader.gif" /> Loading...
+                    </div>
+
+                    <table class="box_table" id="user_edit_table" style="display:none; width:100%;">
+                        <tr><th colspan="2"><label for="user_id">Selected account details</label><input type="hidden" name="user_id" id="user_id"> <span id="user_save_error" style="color:red; float:right;"></span></th></tr>
+                        <tr><td><label for="user_first_name">First Name</label><span style="color:red;">*</span>:</td><td><input type="text" size="35" maxlength="30" id="user_first_name" name="user_first_name"></td></tr>
+                        <tr><td><label for="user_last_name">Last Name</label><span style="color:red;">*</span>:</td><td><input type="text" size="35" maxlength="30" id="user_last_name" name="user_last_name"></td></tr>
+                        <tr><td><label for="user_email">Email</label><span style="color:red;">*</span>:</td><td><input type="text" size="35" maxlength="30" id="user_email" name="user_email"></td></tr>
+                        <tr><td><label for="user_username">User Name</label><span style="color:red;">*</span>:</td><td><input type="text" size="35" maxlength="30" id="user_username" name="user_username"> </td></tr>
+                        <tr><td><label for="user_password">Password:</label></td><td><input type="password" size="35" maxlength="128" id="user_password" name="user_password" placeholder="<Hidden>"><span class="help_text">(leave blank to keep current password)</span></td></tr>
+                        <tr><td><label for="user_password_conf">Confirm Password:</label></td><td><input type="password" size="35" maxlength="128" id="user_password_conf" name="user_password_conf" placeholder="<Hidden>"><span class="help_text">(leave blank to keep current password)</span></td></tr>
+                        <tr class="extra_admin"><td><label for="user_is_active"> Active:</label></td><td><input type="checkbox" id="user_is_active" name="user_is_active"> <span class="help_text">(allows login)</span> </td></tr>
+                        {% if user.is_superuser %}
+                            <tr class="extra_admin"><td><label for="user_is_staff">Administrator:</label></td><td><input type="checkbox" id="user_is_staff" name="user_is_staff"> <span class="help_text">(allows management of non-administrator users)</span></td></tr>
+                        {% endif %}
+                        <tr class="extra_admin"><td><label for="user_use_boinc">Can Use BOINC:</label></td><td><input type="checkbox" id="user_use_boinc" name="user_use_boinc"> <span class="help_text">(allows option to run jobs using BOINC)</span></td></tr>
+                        <tr class="extra_admin"><td><label for="user_post_public">Post Public Scenarios:</label></td><td><input type="checkbox" id="user_post_public" name="user_post_public"> <span class="help_text">(allows posting of publicly available scenarios)</span></td></tr>
+                        <tr class="extra_admin"><td><label for="user_max_sims">Simulation Limit:</label></td><td><input type="text" size="8" maxlength="8"  id="user_max_sims" name="user_max_sims"> <span class="help_text">(per simulation group; leave blank or enter 0 for unlimited)</span></td></tr>
+                        <tr><td>&nbsp;</td><td><input type="button" name="save_user_button" id="save_user_button" value="Save Changes"> (<span style="color:red;">*</span> = required)</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="display:none;background-color:#FFCCCC;" id="delete_dialog" title="Are you sure!?">
+        <p> WARNING: You are about to permanently delete this user. THIS CAN NOT BE UNDONE!</p>
+        <p> Deleting this user will delete all scenarios, experiments, and simulation results that are associated with this user.</p>
+        <p> If you are unsure of the ramifications of deleting this user, you should disable this user instead by un-checking the &quot;Active&quot; setting and saving the changes.</p>
+    </div>
+
+    <div style="display:none;background-color:#FFFF99;" id="exception_dialog" title="An error occurred">
+        <p> An unknown error occurred while performing this action.</p>
+        <p> Please notify the system administrator if this problem persists.</p>
+    </div>
+
+{% endblock %}

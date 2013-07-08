@@ -1,0 +1,13 @@
+/*CSS styles for the notification template tag*/
+/* General notification div */
+.notification {padding:10px 10px 10px 45px; margin: 0 0 20px;border-radius: 2px 2px 2px 2px;position:relative;}
+/* Additional styles for information notifications */
+.msginfo {border:1px solid rgb(153,196,234);background:url('../img/notifications/info.png') no-repeat scroll 10px center rgb(209,228,243);}
+/* Additional styles for success notifications */
+.msgsuccess {border:1px solid rgb(193,215,121);background:url('../img/notifications/success.png') no-repeat scroll 10px center rgb(239,254,185);}
+/* Additional styles for errir notifications */
+.msgerror {border:1px solid rgb(225,139,124);background:url('../img/notifications/error.png') no-repeat scroll 10px center rgb(250,213,207);}
+/* Additional styles for warning notifications */
+.msgwarning {border:1px solid rgb(234,197,114);background:url('../img/notifications/warning.png') no-repeat scroll 10px center rgb(225,233,173);}
+/* Close button to hide the notification */
+a.notification_close {position:absolute;right:5px;top:5px;display:inline-block;width:8px;height:8px;cursor:pointer;text-decoration: none;background:url('../img/notifications/close.png') no-repeat scroll 0 0 transparent;}

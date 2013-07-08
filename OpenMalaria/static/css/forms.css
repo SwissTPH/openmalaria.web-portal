@@ -1,0 +1,35 @@
+input.slider_feedback {
+    border:0;
+    background:none;
+    font-weight: bold;
+}
+
+#agegroups input {
+    width:50px;
+}
+
+fieldset {
+    /*width:90%;*/
+}
+
+div.slider {
+    width:90%;
+    margin-left: 15px;;
+}
+
+label {
+    width:auto;
+    display:inline-block;
+    text-align: right;
+}
+
+fieldset{
+    margin-bottom: 15px;
+    padding:10px;
+}
+
+legend .refresh {
+    vertical-align: -5px;
+    margin-left:3px;
+    cursor: pointer;
+}

@@ -1,0 +1,158 @@
+html {
+    margin: 0;
+    padding: 0;
+    font: normal 12px Verdana, Verdana, Geneva, sans-serif;
+    /* Change the background properties here */
+    background: black url('../img/background-desktop.jpg') repeat fixed;
+}
+
+body {
+    height: 100%;
+    width:100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* defines the "desktop", a div with the radial gradient shadow.*/
+div#desktop {
+    z-index: 0;
+    height: 100%;
+    width: 100%;
+    padding:0;
+    margin:0;
+    border:none;
+    position:fixed;
+    top:0;
+    left:0;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-image: -ms-radial-gradient(center, ellipse closest-side, rgba(255,255,255,0.10) 0%, rgba(0,0,0,.70) 100%);
+    background-image: -moz-radial-gradient(center, ellipse closest-side, rgba(255,255,255,0.10) 0%, rgba(0,0,0,.70) 100%);
+    background-image: -o-radial-gradient(center, ellipse closest-side, rgba(255,255,255,0.10) 0%, rgba(0,0,0,.70) 100%);
+    background-image: -webkit-gradient(radial, center center, 0, center center, 140, color-stop(0, rgba(255,255,255,0.10)), color-stop(1, rgba(0,0,0,.70)));
+    background-image: -webkit-radial-gradient(center, ellipse closest-side, rgba(255,255,255,0.10) 0%, rgba(0,0,0,.70) 100%);
+    background-image: radial-gradient(ellipse closest-side at center, rgba(255,255,255,0.10) 0%, rgba(0,0,0,.70) 100%);
+}
+
+/* defines the usable screen area where page-specific content will be added */
+div#workspace {
+    position:relative;
+    width:100%;
+    min-width:875px;
+    margin: 0 auto;
+    padding-top:70px;
+    z-index:50;
+    background-color:transparent;
+}
+
+/* defines a shadow for elements that should cast a shadow on the desktop element */
+.content, .shadow {
+    -webkit-box-shadow:  1px 20px 20px 10px rgba(0, 0, 0, .5);
+    -moz-box-shadow:  1px 20px 20px 10px rgba(0, 0, 0, .5);
+    box-shadow:  1px 20px 20px 10px rgba(0, 0, 0, .5), ;
+}
+
+/* defines the rounded-rectangle boxes to put stuff in */
+.content {
+    padding:10px;
+    border:none;
+    width:90%;
+    min-width:800px;
+    height:100%;
+    margin: 10px auto;
+    background-color:#eeeeee;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+
+/* a div to put tables in. Key motivation is to ensure a 10px margin (putting this on the table directly seems ineffective) */
+div.table_container {
+    margin:10px;
+    background:transparent;
+    border:none;
+}
+
+/* a basic table style */
+.simple td {background-color: inherit;}
+.simple th {background-color: inherit;}
+
+/* table style for most of the site */
+.box_table {border-collapse: collapse;text-align: left;margin:0;padding:0;}
+.box_table th, td {border:none;background: #cccccc;padding:7px 10px;}
+.box_table td {border-top: 1px solid white; background: #dfdfdf;}
+.innerbox_table td {border-top: 1px solid white; background: #ffffff;}
+
+.transparent_table {border-collapse: collapse; text-align: left; margin:0; padding: 0;}
+.transparent_table th {border:none;background: transparent;padding:7px 0;}
+.transparent_table td {border:none;background: transparent;padding:7px 10px;}
+
+
+
+.error_text {color:red;}
+.error_input {background-color:#ffcccc;}
+.help_text {color:#3366CC;}
+
+/* a style for "section" headers */
+h2 {width:100%;text-align:left;border-bottom: 2px solid gray;padding-bottom: 10px;padding-left: 5px;font-size: 18px;text-shadow:1px 1px 2px #888888;}
+
+.parameterInput {
+    margin:0;
+    padding:0;
+}
+
+.parameterInput td{
+    width: auto;
+    border-collapse: collapse;
+    border:none;
+    white-space: normal;
+    background-color: transparent;
+    margin:2px;
+    padding:2px;
+    clear:both;
+}
+
+
+.helpText {
+    color:#666666;
+}
+
+pre.prettyprint {
+    background: white; overflow:auto; width:/*650px*/100%;height:250px;
+    white-space: -moz-pre-wrap;
+    white-space: -o-pre-wrap; /* Opera */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+#expected_sim_count {
+    display:block;
+    margin:5px;
+    padding-bottom: 5px;
+}
+
+#launch_experiment_form {
+    display: inline;
+}
+
+.action_link{
+    line-height: 20px;
+}
+
+
+/* defines the general look and feel of the menu bar */
+div#navmenu {z-index:99;position:fixed;top:0;left:0;height:50px;background: gray url('../img/background-navmenu.png') repeat-x;-webkit-border-bottom-right-radius: 10px;-moz-border-radius-bottomright: 10px;border-bottom-right-radius: 10px;line-height:50px;overflow: hidden; border-right:1px solid black; border-bottom: 1px solid black;}
+/* The image representing the menu bar expand/contract item */
+img#navmenu_expand {padding: 10px 0;cursor:pointer;}
+/* The div representing the menu bar "OpenMalaria" title */
+div#logo_title {font-size:18px;font-weight:bold;}
+/* generic style for the menu items */
+.navmenu_item {color: #4c4c4c;border-left: 1px solid rgba(255, 255, 255, 0.5);border-right:1px solid rgba(128, 128, 128, 0.5);padding: 0 10px;font-size: 14px;text-shadow:1px 1px 2px #ffffff;-moz-user-select: none;-webkit-user-select: none; -ms-user-select:none;display: inline;float:left;overflow: hidden;}
+/* style to remove the right border (for the expand/contract item in particular)*/
+.no_right_border {border-right:none;}
+/* style to remove the left border (for the "OpenMalaria" title item in particular)*/
+.no_left_border {border-left:none;}
+/* make the cursor "the finger" for elements that can be clicked */
+.clickable {cursor: pointer;}
+/* style for the currently selected menu bar item */
+.selected_menu {background-color:rgba(100,100,100,0.5); color:#ffffff;text-shadow:1px 1px 2px #4c4c4c; border-left: 1px solid rgba(100,100,100,0.5);}

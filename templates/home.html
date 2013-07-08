@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% comment %}
+    Copyright (C) 2012-2013 Center for Research Computing, University of Notre Dame
+    Initially developed by Gregory Davis <gdavis2@nd.edu>, Benoit Raybaud <Benoit.Raybaud.1@nd.edu>, Alexander Vyushkov
+    <Alexander.Vyushkov@nd.edu>, and Cheng Liu <Cheng.Liu.125@nd.edu>.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    1. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+    Software.
+
+    2. Neither the name of the University of Notre Dame, nor the names of its contributors may be used to endorse or
+    promote products derived from this software without specific prior written permission.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+    OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+{% endcomment %}
+
+{% comment %} This template defines the login page (which is also the default site page). {% endcomment %}
+{% load settings %}
+
+{% block extra_css %}
+    {% comment %} Styles for the login box. {% endcomment %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/login.css" />
+{% endblock %}
+
+{% block extra_js %}
+    {% comment %} For better or worse, this site uses AJAX login authentication. The JS actions are defined here. {% endcomment %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/login.js"></script>
+{% endblock %}
+
+{% comment %} Hide the menu bar on the login page. Note, browsers' development tools can be used to show this, but if the user is not logged in, all links will redirect back to this page. {% endcomment %}
+{% block menu_display_css %}display:none;{% endblock %}
+
+{% comment %} The "meat" of the page should be contained within the "contents" block. See base.html {% endcomment %}
+{% block contents %}
+    {% comment %} The login_footer is where the "branding" should occur (ie. logos, etc). {% endcomment %}
+    <div id="login_footer" class="shadow">
+        <div class="edu_link" id="crc_link" style="left:25px;">&nbsp;</div>
+        <div class="edu_link" id="stphi_link" style="left:215px;">&nbsp;</div>
+        <div class="edu_link" id="jcu_link" style="left:395px;">&nbsp;</div>
+    </div>
+
+    {% comment %} This defines the centered login window. {% endcomment %}
+    <div id="login_panel" class="shadow">
+        {% comment %} This defines the centered login window. {% endcomment %}
+        <div class="title">OpenMalaria</div>
+        <div class="subtitle">Web Interface</div>
+        {% comment %} Grab the version from the settings.py file using the settings template tag. {% endcomment %}
+        <div class="subtitle">Version: {% settings_value "VERSION_ID" %}</div>
+        {% comment %} An area to show errors that may arise during authentication {% endcomment %}
+        <div class="error" id="login_error"></div>
+        {% comment %} Textfield to prompt for login name {% endcomment %}
+        <input type="text" id="userid_field" spellcheck="false" />
+        {% comment %} Textfield to prompt for login password {% endcomment %}
+        <input type="password" id="password_field" spellcheck="false" />
+        {% comment %} Login button. Action is defined in the JS file {% endcomment %}
+        <input class="button" type="button" value="Login" id="login_button" />
+        {% comment %} Link to page where password can be reset. {% endcomment %}
+        <div class="bottom_links">
+            <a href="{% url "django.contrib.auth.views.password_reset" %}">Reset password</a>
+        </div>
+        {% csrf_token %}
+    </div>
+{% endblock %}

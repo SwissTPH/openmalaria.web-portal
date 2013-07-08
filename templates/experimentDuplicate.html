@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% comment %}
+    Copyright (C) 2012-2013 Center for Research Computing, University of Notre Dame
+    Initially developed by Gregory Davis <gdavis2@nd.edu>, Benoit Raybaud <Benoit.Raybaud.1@nd.edu>, Alexander Vyushkov
+    <Alexander.Vyushkov@nd.edu>, and Cheng Liu <Cheng.Liu.125@nd.edu>.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    1. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+    Software.
+
+    2. Neither the name of the University of Notre Dame, nor the names of its contributors may be used to endorse or
+    promote products derived from this software without specific prior written permission.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+    OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+{% endcomment %}
+
+{% comment %} This template provides a mechanism to duplicate an existing experiment simulation group. {% endcomment %}
+{% comment %} Need to load the "notifications" template tag to show errors/warnings/notices {% endcomment %}
+{% load notifications %}
+
+{% block extra_js %}
+ <script type="text/javascript" src="{{ STATIC_URL }}js/experimentDuplicate.js"></script>
+{% endblock %}
+
+{% block menu_display_css %}
+    display:block;
+{% endblock %}
+
+{% block contents %}
+    <div class="content">
+        {% show_notifications %}
+
+        <h2>Duplicate Existing Simulation Group</h2>
+
+        <p>In this section, you can duplicate an simulation group to be executed by the system. By default, the name, description and parameter values shown here are exact duplicates of the experiment you selected on the previous screen.
+            You can choose to modify any/all/none of this information.</p>
+
+        <form id="experiment_submission_form" method="post" action="{% url "experimentDuplicatePost" %}">
+            {% csrf_token %}
+            <table class="parameterInput">
+                <tr>
+                    <td><label for="new_experiment_name">Name:</label></td>
+                    <td>
+                        <input type="text" value="{{ experiment.name }}" required="required" name="new_experiment_name" id="new_experiment_name" style="width:500px;" placeholder="Type in a short name (or title) for this simulation group configuration" maxlength="100"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="new_experiment_description_textarea">Description:</label> </td>
+                    <td>
+                        <textarea form="experiment_submission_form" required="required" style="resize: none;" name="new_experiment_description_textarea" id="new_experiment_description_textarea" rows="10" cols="100" placeholder="Type in a short description of the simulation group configuration.">{{ experiment.description }}</textArea>
+                        <div id="counter">Characters remaining: 1000</div>
+                        <input type="hidden" value="{{ experiment.description }}" name="new_experiment_description" id="new_experiment_description"/>
+                    </td>
+                </tr>
+                {% if user.additionalUserInfo.all.0.use_boinc %}
+                    <tr>
+                        <td><label for="use_boinc" >Use BOINC:</label></td><td> <input type="checkbox" id="use_boinc" name="use_boinc" {% if experiment.use_boinc %}checked="checked"{% endif %}/> <span class="help_text">Choosing this option will launch the simulations using BOINC and not the simulation cluster.</span> </td>
+                    </tr>
+                {% endif %}
+
+            </table>
+
+            {% if experiment.parameters.all|length > 0 %}
+            <fieldset id="scenario_details">
+                <legend>Scenario Parameter Details:</legend>
+                <p>For each parameter, you can specify a fixed value (ie. 0.05), multiple values separated by a comma (ie. 0.05, 0.06, 0.07), or a range of values. Ranges are specified as "start:stop:step" (ie. 1:5:1, resulting in parameter values of 1,2,3,4). NOTE: The stop value is excluded.</p>
+                <table id="parameter_table" class="parameterInput">
+                    {% for parameter in experiment.parameters.all %}
+                        <tr>
+                            <td><label for="input_{{ parameter.id }}">{{ parameter.description }}</label></td>
+                            <td><input type="text" value="{{ parameter.param_value }}" id="input_{{ parameter.id }}" />
+                        </tr>
+                    {% endfor %}
+                </table>
+            </fieldset>
+            {% endif  %}
+            <input type="hidden" value="{{ experiment.id }}" name="old_experiment_id" id="old_experiment_id">
+            <input type="hidden" value="" name="parameters" id="parameters"/>
+            <div></div>
+            <p id="new_simulation_submit">
+                <span id="expected_sim_count" style="display:inline;">Number of simulations expected: </span><span id="submission_error" style="display:none;" class="error_text">Marked fields are required!</span><br /><br />
+                <input type="hidden" id="should_execute_experiment" name="should_execute_experiment" value="0" />
+                <input type="hidden" id="sim_count_limit" value="{{ max_sims }}" />
+                <input type="button"  id="new_experiment_submit" name="new_experiment_submit" value="Launch Simulation Group Now" />
+                <input type="button"  id="save_experiment_submit" name="new_experiment_submit" value="Save Simulation Group For Later Execution" />
+            </p>
+        </form>
+    </div>
+
+
+{% endblock %}

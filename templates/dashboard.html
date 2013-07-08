@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% comment %}
+    Copyright (C) 2012-2013 Center for Research Computing, University of Notre Dame
+    Initially developed by Gregory Davis <gdavis2@nd.edu>, Benoit Raybaud <Benoit.Raybaud.1@nd.edu>, Alexander Vyushkov
+    <Alexander.Vyushkov@nd.edu>, and Cheng Liu <Cheng.Liu.125@nd.edu>.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    1. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+    Software.
+
+    2. Neither the name of the University of Notre Dame, nor the names of its contributors may be used to endorse or
+    promote products derived from this software without specific prior written permission.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+    OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+{% endcomment %}
+
+{% comment %} This template defines the dashboard page (Status of the system/simulations). {% endcomment %}
+{% comment %} Need to load the "notifications" template tag to show errors/warnings/notices {% endcomment %}
+{% load notifications %}
+
+{% block extra_css %}
+    {% comment %} Styles progress bars. {% endcomment %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/progress.css" />
+{% endblock %}
+
+{% block extra_js %}
+    {% comment %}
+        Javascript for polling the status of jobs and updating. In hindsight, ajax polling of jobs is probably a bad
+        idea, especially when there are lots (>50) jobs being run. This can take lots of time and needs to be optimized.
+    {% endcomment %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/dashboard.js" ></script>
+{% endblock %}
+
+{% block contents %}
+    <div class="content">
+        {% comment %} Show any notifications {% endcomment %}
+        {% show_notifications %}
+
+        <h2>Welcome {{ user.first_name }} {{ user.last_name }}</h2>
+        <div>
+            <div style="float:right;">
+                <p>Your last login occurred: {{ user.last_login }}</p>
+                {% comment %} Ideally, outage status should be more database-driven. Right now you need to hard code it here {% endcomment %}
+                <p>Next scheduled system outage: No planned outages</p>
+            </div>
+            {% comment %} This table shows info about the number of users/simulations etc. {% endcomment %}
+            <div class="table_container">
+                <table class="box_table" summary="System Status">
+                    <tr><th colspan="2">System Status At A Glance</th></tr>
+                    {% comment %} Ideally, system status should be more database-driven. Right now you need to hard code it here {% endcomment %}
+                    <tr><td>System Status:</td><td>Functioning Normally</td></tr>
+                    {% comment %} Reports the number of active sessions {% endcomment %}
+                    <tr><td>Active Sessions:</td><td>{{ active_sessions }}</td></tr>
+                    {% comment %} Reports the number of simulations running for all users {% endcomment %}
+                    <tr><td>Simulations Running:</td><td>{{ active_simulations }}</td></tr>
+                    {% comment %} Reports the number of simulations pending for all users - Excluding BOINC jobs {% endcomment %}
+                    <tr><td>Simulations Pending:</td><td>{{ pending_simulations }}</td></tr>
+                </table>
+            </div>
+        </div>
+
+        {% comment %} Show details for each experiment currently executing on the simulation cluster {% endcomment %}
+        <h2>Currently Running Cluster-Based Experiments</h2>
+        <div class="table_container">
+            <table id="job_listing_experiments" class="box_table" style="width:90%; margin:0 auto;" summary="Cluster Experiments">
+                <thead>
+                <tr>
+                    <th style="width:30px;">#</th>
+                    <th>Experiment</th>
+                    <th style="width:250px;">Date Started</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if experiments|length < 1 %}
+                    <tr><td colspan="5">No Experiments Running...</td></tr>
+                {% endif %}
+
+                {% comment %} First iterate through the experiments, displaying basic information. {% endcomment %}
+                {% for experiment in experiments %}
+                    <tr  id="exp_table_{{ experiment.id }}" style="border-top: white;">
+                        <td >{{ experiment.id }}</td>
+                        <td>{{ experiment.name }}<br /><em>{{ experiment.description }}</em></td>
+                        <td>{{ experiment.created_on }}<br/><em>{{ experiment.created_on|timesince }} ago</em></td>
+                        <td>
+                            <div class="ui-progress-bar ui-container">
+                                <div id="exp_status_{{ experiment.id }}" class="ui-progress" style="width:0;" data-value="0">
+                                    <span id="exp_status_label_{{ experiment.id }}" class="ui-label">
+                                        Pending
+                                    </span>
+                                </div>
+                            </div>
+                            <div style="font-size:10px;margin-top:2px;">
+                                <em>Total: <span id="total_{{ experiment.id }}">N/A</span></em> &nbsp; <em>Remaining: <span id="remaining_{{ experiment.id }}">N/A</span></em> <br/>
+                                <em style="color:green">Completed: <span id="completed_{{ experiment.id }}">N/A</span></em> &nbsp;
+                                <em style="color:red">Failed: <span id="failed_{{ experiment.id }}">N/A</span></em>
+                            </div>
+                        </td>
+                        <td>
+                            {% if experiment.getStatus.total_simulations < 200 %}
+                                <a class="action_link" id="show{{ experiment.id }}" href="#">Show Details</a><br/>
+                            {% endif %}
+                            <a class="action_link" href="{% url "downloadExperimentResults" experiment.id %}">Download Results</a>
+                        </td>
+                    </tr>
+
+                    {% comment %} If there are fewer than 200 simulations running for an experiment, detail them here {% endcomment %}
+                    {% comment %} Note: This is highly inefficent and should probably be removed at some point {% endcomment %}
+                    {%  if experiment.simulations.count < 200 %}
+                        {% for sim in experiment.simulations.all %}
+                            <tr style="display:none;" class="innerbox_table exp_details_{{ experiment.id }}">
+                                <td>&nbsp;</td>
+                                <td>Sim #{{ sim.id }}</td>
+                                <td>{{ sim.start_time }}<br/><em>{{ sim.start_time|timesince }} ago</em></td>
+
+                                <td>
+                                    <div class="ui-progress-bar ui-container">
+                                        <div id="sim_status_{{ sim.id }}" class="ui-progress" style="width:{{ sim.status }}%;" data-value="{{ sim.status }}">
+                                            <span id="sim_status_label_{{ sim.id }}" class="ui-label">
+                                                Pending
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </td>
+                                <td>
+                                    {% if sim.status == 100 %}
+                                        <a  class="action_link" href="{% url "downloadResults" sim.id %}" target="_blank">Download Results</a>  <br/>
+                                        <a class="action_link" href="{% url "downlaodCtsout" sim.id %}" target="_blank">Download Ctsout</a>
+                                    {% elif sim.status > -1 %}
+                                        {% comment %}There is an option to cancel jobs, only if they are not BOINC jobs.{% endcomment %}
+                                        <a class="action_link" id="cancel_link" href="#" title="{{ sim.id }}">Cancel</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {%  endif %}
+
+
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+        {% comment %} Show details for each experiment currently executing in the BOINC environment{% endcomment %}
+        {% comment %} This should mimic the cluster-based experiments section above, but with fewer details/options.{% endcomment %}
+        <h2>Currently Running BOINC-Based Experiments</h2>
+        <div class="table_container">
+            <table id="job_listing_boinc" class="box_table" style="width:90%; margin:0 auto;" summary="BOINC Experiments" >
+                <thead>
+                <tr>
+                    <th style="width:30px;">#</th>
+                    <th>Experiment</th>
+                    <th style="width:250px;">Date Started</th>
+                    <th style="width:250px;">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if boinc_experiments|length < 1 %}
+                    <tr><td colspan="4">No BOINC Experiments Running...</td></tr>
+                {% endif %}
+                {% for experiment in boinc_experiments %}
+                    <tr  id="boinc_table_{{ experiment.id }}" style="border-top: white;">
+                        <td >{{ experiment.id }}</td>
+                        <td>{{ experiment.name }}<br /><em>{{ experiment.description }}</em></td>
+                        <td>{{ experiment.created_on }}<br/><em>{{ experiment.created_on|timesince }} ago</em></td>
+                        <td>
+                            <div class="ui-progress-bar ui-container">
+                                <div id="exp_status_{{ experiment.id }}" class="ui-progress" style="width:0;" data-value="0">
+                                    <span id="exp_status_label_{{ experiment.id }}" class="ui-label">
+                                        Pending
+                                    </span>
+                                </div>
+                            </div>
+                            <div style="font-size:10px;margin-top:2px;">
+                                <em>Total: <span id="total_{{ experiment.id }}">N/A</span></em> &nbsp; <em>Remaining: <span id="remaining_{{ experiment.id }}">N/A</span></em> <br/>
+                                <em style="color:green">Completed: <span id="completed_{{ experiment.id }}">N/A</span></em> &nbsp;
+                                <em style="color:red">Failed: <span id="failed_{{ experiment.id }}">N/A</span></em>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+{% endblock %}

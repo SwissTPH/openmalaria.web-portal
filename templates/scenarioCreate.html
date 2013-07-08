@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% comment %}
+    Copyright (C) 2012-2013 Center for Research Computing, University of Notre Dame
+    Initially developed by Gregory Davis <gdavis2@nd.edu>, Benoit Raybaud <Benoit.Raybaud.1@nd.edu>, Alexander Vyushkov
+    <Alexander.Vyushkov@nd.edu>, and Cheng Liu <Cheng.Liu.125@nd.edu>.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    1. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+    Software.
+
+    2. Neither the name of the University of Notre Dame, nor the names of its contributors may be used to endorse or
+    promote products derived from this software without specific prior written permission.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+    OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+{% endcomment %}
+
+{% comment %} This template acts as the scenario "upload" page. {% endcomment %}
+{% comment %} Need to load the "notifications" template tag to show errors/warnings/notices {% endcomment %}
+{% load notifications %}
+
+{% block extra_js %}
+    {% comment %} Javascript for the page actions {% endcomment %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/scenarioCreate.js"></script>
+{% endblock %}
+
+{% comment %} Show the menu by default {% endcomment %}
+{% block menu_display_css %}
+    display:block;
+{% endblock %}
+
+{% block contents %}
+    <div class="content">
+        {% comment %} Show any notifications {% endcomment %}
+        {% show_notifications %}
+
+        <h2>Upload New Scenario</h2>
+        <p>
+            In this section, upload a hand-crafted scenario file for use in OpenMalaria simulations. These scenario files should conform to OpenMalaria's XML schema (version 30). There are two types of scenario files currently accepted by this system.
+        </p>
+        <ol>
+            <li>A completely specified scenario where all parameters of the scenario have fixed values defined within the XML.</li>
+            <li>A template scenario where one or more parameters of the scenario can be defined to have one or more values.</li>
+        </ol>
+        <p>
+            If a template scenario is used, this system will scan for the parameters (wrapped by "@", ie. @param1@) and prompt you for a description and default value for each.
+        </p>
+        <form id="scenario_submission_form" method="post" action="{% url "scenarioCreate" %}"  enctype="multipart/form-data">
+            {% csrf_token %}
+            <table class="parameterInput" style="width:100%;">
+                <tr>
+                    <td><label for="new_scenario_name">Name:</label></td>
+                    <td><input type="text" required="required" name="new_scenario_name" id="new_scenario_name" placeholder="Type in a short name (or title) for the scenario" maxlength="100" size="100"/></td>
+                </tr>
+                <tr>
+                    <td><label for="new_scenario_description_textarea" >Description:</label></td>
+                    <td>
+                        <textarea form="scenario_submission_form" required="required" style="resize: none; width:100%; margin-left:2px;" name="new_scenario_description_textarea" id="new_scenario_description_textarea" rows="10" placeholder="Type in a short description of the scenario."></textArea>
+                        <div id="counter">Characters remaining: 1000</div>
+                        <input type="hidden" value="" name="new_scenario_description" id="new_scenario_description"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>XML File:</td>
+                    <td><input type="file" required="required" id="new_scenario_file" name="new_scenario_file" /></td>
+                </tr>
+
+                <tr {% if not can_post_public %}style="display:none;"{% endif %}>
+                    <td> Public:</td>
+                    <td>
+                        <input type="checkbox" id="new_scenario_public" name="new_scenario_public" />
+                        <label for="new_scenario_public"  class="help_text">Note: Public scenarios are available for anyone to use. Only you will be able to modify them.</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td> Validate:</td>
+                    <td>
+                        <input type="checkbox" id="new_scenario_validate" name="new_scenario_validate" checked="checked"/>
+                        <label for="new_scenario_validate"  class="help_text">Note: Deselecting this option will bypass scenario validation when uploading.</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>
+                        <input type="submit"  id="new_scenario_submit" name="new_scenario_submit" value="Upload" />
+                    </td>
+                </tr>
+
+            </table>
+        </form>
+    </div>
+
+
+{% endblock %}

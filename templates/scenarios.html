@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% comment %}
+    Copyright (C) 2012-2013 Center for Research Computing, University of Notre Dame
+    Initially developed by Gregory Davis <gdavis2@nd.edu>, Benoit Raybaud <Benoit.Raybaud.1@nd.edu>, Alexander Vyushkov
+    <Alexander.Vyushkov@nd.edu>, and Cheng Liu <Cheng.Liu.125@nd.edu>.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    1. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+    Software.
+
+    2. Neither the name of the University of Notre Dame, nor the names of its contributors may be used to endorse or
+    promote products derived from this software without specific prior written permission.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+    OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+{% endcomment %}
+
+{% comment %} This template acts as the scenario management page (view/modify/upload/delete). {% endcomment %}
+{% comment %} Need to load the "notifications" template tag to show errors/warnings/notices {% endcomment %}
+{% load notifications %}
+
+{% block extra_css %}
+    {% comment %} Uses Google's prettify.js library for formatting and syntax coloring {% endcomment %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/prettify.css" />
+{% endblock %}
+
+{% block extra_js %}
+    {% comment %} Javascript for the page actions {% endcomment %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/scenarios.js"></script>
+    {% comment %} Javascript Google's prettify.js library {% endcomment %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/prettify.js"></script>
+{% endblock %}
+
+{% comment %} Show the menu by default {% endcomment %}
+{% block menu_display_css %}
+    display:block;
+{% endblock %}
+
+{% block contents %}
+    <div class="content">
+        {% comment %} Show any notifications {% endcomment %}
+        {% show_notifications %}
+
+        <h2>Available Scenarios</h2>
+        <p>
+            In this section, you can view, delete, or modify previously uploaded scenario configuration files.
+            You can upload new scenario files by clicking on the "Upload New Scenario" button.
+        </p>
+
+        {% comment %} Ugh! Table layout... should be refactored {% endcomment %}
+        <table class="simple" style="width:100%;">
+            <tr>
+                {% comment %} List of available scenarios and action buttons {% endcomment %}
+                <td style="width:25%;vertical-align: top;">
+                    <div style="background: #cccccc;padding:7px;"><label for="current_scenarios" style="font-weight:bold;">Uploaded Scenarios:</label></div>
+                    <select size="22" style="width:100%; outline:none;" id="current_scenarios" name="current_scenarios">
+                        {% for scenario in scenario_objects %}
+                            <option value="{{ scenario.id }}">{{ scenario.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div>
+                        <input type="button" value="Upload New Scenario" style="width:100%; margin-top:5px;" id="button_upload_scenario" name="button_upload_scenario" />
+                        <input type="button" disabled value="Delete Selected Scenario" style="width:100%; margin-top:5px;" id="button_delete_scenario" name="button_delete_scenario" />
+                        <input type="button" disabled value="Edit Selected Contents" style="width:100%; margin-top:5px;" id="button_edit_scenario" name="button_edit_scenario"  />
+                    </div>
+                </td>
+
+                {% comment %} Scenario details {% endcomment %}
+                <td style="width:75%;vertical-align: top;">
+                    <div id="waiting" style="display:none;">
+                        <img src="{{ STATIC_URL }}img/loader.gif" /> Loading...
+                    </div>
+
+                    <table class="box_table" id="scenario_view_table" style="display:none; width:100%;">
+                        <tr><th colspan="2"><label for="scenario_id">Selected scenario details</label><input type="hidden" name="scenario_id" id="scenario_id"> <span id="scenario_action_error" style="color:red; float:right;"></span></th></tr>
+                        <tr><td style="width:100px;">Name:</td><td><span id="scenario_name"></span></td></tr>
+                        <tr><td>Description:</td><td><span id="scenario_description"></span></td></tr>
+                        <tr><td>Public:</td><td><div id ="scenario_public" style="display:inline;">Replaced Text</div> {% if can_post_public %}<input type="button" id="toggle_public" name="toggle_public" value="Toggle"/>{% endif %}</td></tr>
+                        <tr><td>Created By:</td><td><span id="scenario_user">Replaced Text</span></td></tr>
+                        <tr><td>Created On:</td><td><span id="scenario_date">Replaced Text</span></td></tr>
+                        <tr><td>Last Modified:</td><td><span id="scenario_modified">Replaced Text</span></td></tr>
+                        <tr><td>Contents:</td><td><pre id="scenario_content" class="prettyprint" ></pre></td></tr>
+                        <tr><td>Parameters:</td><td><table id="scenario_parameters" class="box_table"></table></td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+    {% comment %} Dialog to allow simple edits to an already uploaded scenario XML file {% endcomment %}
+    <div style="margin: 0 0; height:auto; display:none;" id="edit-dialog" title="Edit scenario contents...">
+        <p>
+            <label for="scenario_editor_textarea">NOTE</label>: This functionality is only intended to be used to correct small typographical errors. The following actions will are not supported:
+            <ul>
+                <li>Adding additional variable parameters (ie. using the @param@ method)</li>
+                <li>Modifying variable parameters (ie. changing @param@ to @param_1@)</li>
+            </ul>
+            Performing any of the above will likely result in the scenario failing validation and becoming unusable. If you need to perform these actions, you should upload another scenario with these changes. Edit with care!
+        </p>
+        <textarea style="width:100%; height:300px; overflow:scroll; resize: none;" id="scenario_editor_textarea">{{ scenario.contents }}</textarea>
+        <div></div>
+    </div>
+
+    {% comment %} Warning dialog when deleting a scenario {% endcomment %}
+    <div style="display:none;background-color:#FFCCCC;" id="delete-dialog" title="Are you sure!?">
+        <p>WARNING: You are about to permanently delete this scenario. THIS CAN NOT BE UNDONE!</p>
+        <p>All simulation groups based off of this scenario will remain intact and accessible. If it was a public scenario and used to create experiments by other users, those simulations will not be affected by this action.</p>
+        <p>Are you sure you want to delete this scenario?</p>
+        <div></div>
+    </div>
+
+    {% comment %} Warning dialog when toggling scenario visibility {% endcomment %}
+    <div style="display:none;background-color:#FFFF99;" id="toggle-public-dialog" title="Are you sure!?">
+        <p>WARNING: You are about to change the visibility of this scenario for other users.</p>
+        <p>Are you sure you want to do this?</p>
+        <div></div>
+    </div>
+
+{% endblock %}

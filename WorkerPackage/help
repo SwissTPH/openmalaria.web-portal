@@ -1,0 +1,30 @@
+Installation of OpenMalaria worker nodes
+========================================
+
+
+1.Install setuptools
+    wget http://pypi.python.org/packages/2.6/s/setuptools/setuptools-0.6c11-py2.6.egg#md5=bfa92100bd772d5a213eedd356d64086
+    sh setuptools-0.6c11-py2.6.egg --prefix=/usr
+
+2. Install pip
+    curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+    python get-pip.py
+
+
+3. Install celery
+    pip install celery
+
+
+4. Install postgresql + psycopg2
+    yum intsall postgresql
+    yum intsall postgresql-devel
+    yum install  python-psycopg2
+
+5. Create the /omdata directory
+
+6. Copy the WorkerPackage/Task directory inside of /omdata
+
+7. Install the celery deamon with the instructions of the help file in celery-deamon folder
+
+8. Edit the settings.py/celeryconfig.py files to set the correct broker URL
+

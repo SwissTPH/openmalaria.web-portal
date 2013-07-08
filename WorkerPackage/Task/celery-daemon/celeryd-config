@@ -1,0 +1,5 @@
+CELERYD_NODES="w1"
+CELERYD_CHDIR="/omdata/Task/"
+CELERYD_OPTS="--concurrency=64"
+CELERY_CONFIG_MODULE="celeryconfig"
+CELERYD_LOG_FILE="/var/log/celery/%n.log"

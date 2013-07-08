@@ -1,0 +1,111 @@
+[
+    {
+        "model": "sites.site",
+        "pk": 1,
+        "fields": {
+            "name": "your domain.com",
+            "domain": "your domain.com"
+        }
+    },
+
+    {
+        "model": "frontend.additionalUserInfo",
+        "pk": 1,
+        "fields": {
+            "max_sims": 0,
+            "use_boinc": true,
+            "post_public": true,
+            "user": 1
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 1,
+        "fields": {
+            "name": "account_creator"
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 1,
+        "fields": {
+            "group": 1,
+            "permission": 1
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 1,
+        "fields": {
+            "group": 1,
+            "permission": 2
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 1,
+        "fields": {
+            "group": 1,
+            "permission": 3
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 1,
+        "fields": {
+            "group": 1,
+            "permission": 4
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 1,
+        "fields": {
+            "group": 1,
+            "permission": 5
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 1,
+        "fields": {
+            "group": 1,
+            "permission": 6
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 1,
+        "fields": {
+            "group": 1,
+            "permission": 7
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 1,
+        "fields": {
+            "group": 1,
+            "permission": 8
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 1,
+        "fields": {
+            "group": 1,
+            "permission": 9
+        }
+    },
+    {
+        "model": "auth.user_groups",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "group": 1
+        }
+    }
+
+
+
+]

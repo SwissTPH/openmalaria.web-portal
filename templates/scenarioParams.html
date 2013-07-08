@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% comment %}
+    Copyright (C) 2012-2013 Center for Research Computing, University of Notre Dame
+    Initially developed by Gregory Davis <gdavis2@nd.edu>, Cheng Liu <Cheng.Liu.125@nd.edu>, Benoit Raybaud
+    <Benoit.Raybaud.1@nd.edu>, and Alexander Vyushkov <Alexander.Vyushkov@nd.edu>.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    1. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+    Software.
+
+    2. Neither the name of the University of Notre Dame, nor the names of its contributors may be used to endorse or
+    promote products derived from this software without specific prior written permission.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+    OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+{% endcomment %}
+
+{% comment %} This template acts as the page for specifying parameter values found in an uploaded scenario. {% endcomment %}
+{% comment %} Need to load the "notifications" template tag to show errors/warnings/notices {% endcomment %}
+{% load notifications %}
+
+{% block extra_js %}
+    {% comment %} Javascript for the page actions {% endcomment %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/scenarioParams.js"></script>
+{% endblock %}
+
+{% comment %} Show the menu by default {% endcomment %}
+{% block menu_display_css %}
+    display:block;
+{% endblock %}
+
+{% block contents %}
+
+    <div class="content">
+        {% comment %} Show any notifications {% endcomment %}
+        {% show_notifications %}
+
+        <h2>Define Scenario Parameters For: {{ name }}</h2>
+        <p>
+            There were {{ params|length }} parameters found in this scenario. Please define them below. When you have finished, click the "Save" button at the bottom of this page.
+        </p>
+        <p>For each parameter, you can specify the default value as a fixed value (ie. 0.05), multiple values separated by a comma (ie. 0.05, 0.06, 0.07), or a range of values. Ranges are specified as "start:stop:step" (ie. 1:5:1, resulting in parameter values of 1,2,3,4). NOTE: The stop value is excluded.</p>
+
+        {% for param in params %}
+            <br />
+            <table class="box_table" style="width:100%; margin:0 auto;" >
+                <thead>
+                <tr><th colspan="2">{{ param }}</th></tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><label style="white-space: nowrap;" for="param_desc_{{ param }}">Description:</label></td>
+                    <td><input type="text" maxlength="100" size="100" id="param_desc_{{ param }}" placeholder="Type in a short description of this parameter"/></td>
+                </tr>
+                <tr>
+                    <td><label style="white-space: nowrap;" for="param_default_{{ param }}">Default Value:</label></td>
+                    <td><input type="text" maxlength="100" size="100" id="param_default_{{ param }}" placeholder="Enter default value(s) for this parameter"/></td>
+                </tr>
+                </tbody>
+            </table>
+        {% endfor %}
+        <div style="width:100%; text-align: center;">
+            <input type="hidden" value="{{ name }}" id="scenario_name" name="scenario_name" />
+            <input type="hidden" value="{{ description }}" id="scenario_description" name="scenario_description"/>
+            <input type="hidden" value="{{ contents }}" id="scenario_contents" name="scenario_contents"/>
+            <input type="hidden" value="{{ is_public }}" id="scenario_public" name="scenario_public"/>
+
+            <input type="button" value="Save Scenario and Parameters"  style="margin: 30px auto;" id="save_button"> <span id="submission_error" class="error_text" style="display:none;">Marked fields are required!</span>
+        </div>
+    </div>
+
+
+{% endblock %}

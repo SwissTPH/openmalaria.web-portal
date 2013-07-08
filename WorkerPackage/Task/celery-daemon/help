@@ -1,0 +1,13 @@
+Copy celeryd file to /etc/init.d/
+
+Make it executable
+    chmod a+x /etc/init.d/celeryd
+
+Copy celeryd-config to /etc/default/ and rename it celeryd
+MAKE SURE THERE IS NO BLANK LINE BETWEEN PARAMETERS IN THIS FILE !!!
+
+if any errors when trying to run the service, change the celeryd script with a one found at https://github.com/celery/celery/tree/3.0/extra and for the right linux distrib.
+Also try direclty wget the celeryd file to the server.
+
+
+More info: http://docs.celeryproject.org/en/latest/tutorials/daemonizing.html#daemonizing

@@ -1,0 +1,31 @@
+#login_panel {background: transparent url('../img/background-signin.png') no-repeat;position:fixed;top:50%;left:50%;width: 299px;height:357px;margin-left: -150px;margin-top: -178px;text-align:center;text-shadow:1px 1px 2px #ffffff;display:none;-webkit-border-radius: 20px; -moz-border-radius: 20px; border-radius: 20px;}
+#login_panel div {width:100%;margin: auto 0;color:#4c4c4c;}
+#login_panel div.title {font-size:30px;font-weight:bold;padding:30px 0 10px 0;}
+#login_panel div.subtitle {font-size:12px;padding:0 0 5px 0;}
+#login_panel div.error {height:16px;font-size:14px;padding:5px 0 10px 0;color:#cc0000;}
+#login_panel input {font-weight: 100;font-size:14px;padding:10px;width: 80%;margin: 5px auto;background-color: rgba(255, 255, 255, 0.5);}
+#login_panel input:focus {outline:1px solid #195192;}
+#login_panel input.button {border:1px solid rgba(100,100,100,0.5);width:auto;padding: 10px 20px;text-shadow:1px 1px 2px #ffffff;background-color: rgba(255, 255, 255, 0.5);-webkit-border-radius: 8px;-moz-border-radius: 8px;border-radius: 8px;}
+/*Styles for the links at the bottom of the login panel*/
+#login_panel div.bottom_links {position:absolute;bottom:0;left:0;right:0;margin-bottom:20px;}
+#login_panel div.bottom_links a {color:#4c4c4c;text-decoration:none;margin: 0 20px;}
+#login_panel div.bottom_links a:hover {color:#195192;}
+
+#login_footer {background: white url('../img/footer.png') no-repeat;position:fixed;bottom:0;left:50%;width: 566px;height:69px;margin-left: -283px;text-align:center;text-shadow:1px 1px 2px #ffffff;-webkit-border-top-left-radius: 20px;
+    -webkit-border-top-right-radius: 20px;
+    -moz-border-radius-topleft: 20px;
+    -moz-border-radius-topright: 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+
+}
+
+.edu_link {
+    margin:14px;
+    position:absolute;
+    top:0;
+    width:155px;
+    height:40px;
+    cursor: pointer;
+    display:inline-block;
+}

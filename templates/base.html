@@ -1,0 +1,72 @@
+{% comment %}
+    Copyright (C) 2012-2013 Center for Research Computing, University of Notre Dame
+    Initially developed by Gregory Davis <gdavis2@nd.edu>, Benoit Raybaud <Benoit.Raybaud.1@nd.edu>, Alexander Vyushkov
+    <Alexander.Vyushkov@nd.edu>, and Cheng Liu <Cheng.Liu.125@nd.edu>.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    1. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+    Software.
+
+    2. Neither the name of the University of Notre Dame, nor the names of its contributors may be used to endorse or
+    promote products derived from this software without specific prior written permission.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+    OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+{% endcomment %}
+
+{% comment %} A generic template that all pages are should extend. Note that this DocType is html5. {% endcomment %}
+<!DOCTYPE html>
+<html>
+    <head>
+        {% comment %} Pages can override the page tite (in browser's title bar) by defining a page_title block. {% endcomment %}
+        <title>{% block page_title %}OpenMalaria Portal{% endblock %}</title>
+        {% comment %} Stylesheets that are used site-wide {% endcomment %}
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/site_wide.css" />
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/notifications.css" />
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/custom-theme/jquery-ui-1.8.23.custom.css" />
+        {% comment %} Pages can add additional styles by defining an extra_css block {% endcomment %}
+        {% block extra_css %}{% endblock %}
+        {% comment %} JQuery is the only javascript library included by default. All others are added at the bottom for fast load times. {% endcomment %}
+        <script type="text/javascript" src="{{ STATIC_URL }}js/libs/jquery-1.8.0.min.js"></script>
+    </head>
+
+    <body>
+        {% comment %} The "Desktop" div defines a radial gradient shadow overlaying the background. Pure eye candy. {% endcomment %}
+        <div id="desktop"></div>
+        {% comment %} The "Navmenu" div defines the collapsible navigation bar at the top of the screen. Note the menubar is hidden {% endcomment %}
+        <div id="navmenu" style="{% block menu_display_css %}display:block;{% endblock %}">
+            {% comment %} This nav item should show the "dashboard" view {% endcomment %}
+            <div class="navmenu_item nav_collapsible clickable no_left_border" id="logo_title">OpenMalaria</div>
+            {% comment %} This nav item should show the "scenarios" view {% endcomment %}
+            <div class="navmenu_item nav_collapsible clickable" id="navmenu_scenarios">Manage Scenarios</div>
+            {% comment %} This nav item should show the "experiments" view {% endcomment %}
+            <div class="navmenu_item nav_collapsible clickable" id="navmenu_experiments">Launch Simulations</div>
+            {% comment %} This nav item should show the "results" view {% endcomment %}
+            <div class="navmenu_item nav_collapsible clickable" id="navmenu_results">View Results</div>
+            {% comment %} This nav item should show the "account" view {% endcomment %}
+            <div class="navmenu_item nav_collapsible clickable" id="navmenu_account">Account Management</div>
+            {% comment %} This nav item should log the user out of the system {% endcomment %}
+            <div class="navmenu_item nav_collapsible clickable" id="navmenu_logout">Log Out</div>
+            {% comment %} This nav item expands/collapses the toolbar {% endcomment %}
+            <div class="navmenu_item no_right_border"><img id="navmenu_expand" src="{{ STATIC_URL }}img/expand-left.png" alt="collapse"/></div>
+        </div>
+        {% comment %} The "workspace" div defines the usable space that pages can use to display their content. {% endcomment %}
+        <div id="workspace">
+            {% comment %} Add content by including a "contents" block in each page that extends this template {% endcomment %}
+            {% block contents %}{% endblock %}
+        </div>
+
+        {% comment %} JS that used site-wide {% endcomment %}
+        <script type="text/javascript" src="{{ STATIC_URL }}js/site_wide.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/libs/jquery-ui-1.8.23.custom.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/libs/jquery.watermark.min.js"></script>
+        {% comment %} Pages can add additional js by defining an extra_js block {% endcomment %}
+        {% block extra_js %}{% endblock %}
+    </body>
+</html>
